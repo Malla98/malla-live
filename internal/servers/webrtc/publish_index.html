@@ -1568,10 +1568,10 @@ class StreamPublisher {
   
   // Initialize the application
   init() {
-    // if (!navigator.mediaDevices) {
-    //   this.setMessage(`WebRTC not supported in this browser. Make sure you're using HTTPS.`);
-    //   return;
-    // }
+    if (!navigator.mediaDevices) {
+      this.setMessage(`WebRTC not supported in this browser. Make sure you're using HTTPS.`);
+      return;
+    }
     
     // Set up event listeners
     this.initEventListeners();
