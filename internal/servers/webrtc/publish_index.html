@@ -1,0 +1,1623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Professional News TV Stream Publisher</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+  --primary-color: #ff8a00;
+  --secondary-color: #da1b60;
+  --text-light: #e0e0ff;
+  --bg-dark: rgba(20, 20, 40, 0.8);
+  --bg-card: rgba(40, 40, 70, 0.6);
+  --gradient: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+  --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  --radius: 12px;
+  --padding: 20px;
+  --gap: 20px;
+  --news-red: #cc0000;
+  --news-blue: #0066cc;
+  --news-gold: #ffcc00;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+  color: white;
+  overflow: hidden;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-width: 1600px;
+  margin: auto;
+  padding: var(--padding);
+  gap: var(--gap);
+}
+
+.header {
+  text-align: center;
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: var(--gradient);
+}
+
+.header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+}
+
+.header p {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.main-content {
+  display: flex;
+  flex: 1;
+  gap: var(--gap);
+  height: calc(100% - 160px);
+}
+
+.controls {
+  flex: 0 0 380px;
+  background: var(--bg-dark);
+  border-radius: var(--radius);
+  padding: var(--padding);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow-y: auto;
+}
+
+.controls-section {
+  background: rgba(30, 30, 50, 0.6);
+  border-radius: 10px;
+  padding: var(--padding);
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.controls-section h2 {
+  font-size: 1.4rem;
+  margin-bottom: 18px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--primary-color);
+  color: #ffaa33;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Fixed Control Group Styles */
+.control-group {
+  display: grid;
+  grid-template-columns: minmax(120px, max-content) minmax(150px, 1fr);
+  gap: 15px;
+  margin-bottom: 18px;
+  align-items: center;
+}
+
+.control-group label {
+  font-weight: 500;
+  color: var(--text-light);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 120px;
+}
+
+.control-group input,
+.control-group select {
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #444477;
+  background: rgba(10, 10, 30, 0.7);
+  color: white;
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.control-group input:focus,
+.control-group select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(255, 138, 0, 0.3);
+}
+
+/* Text overflow handling */
+.control-group input {
+  text-overflow: ellipsis;
+}
+
+.control-group select {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Checkbox alignment */
+.control-group input[type="checkbox"] {
+  width: auto;
+  margin-right: 8px;
+}
+
+.control-group > div {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.preview-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+
+.video-container {
+  flex: 1;
+  position: relative;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #111;
+}
+
+#news-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+}
+
+.stats {
+  background: var(--bg-dark);
+  border-radius: var(--radius);
+  padding: 15px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border-radius: 10px;
+  padding: 15px;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+}
+
+.stat-card h3 {
+  font-size: 1rem;
+  margin-bottom: 8px;
+  color: #ffaa33;
+}
+
+.stat-value {
+  font-size: 1.8rem;
+  font-weight: bold;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.actions {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 15px;
+}
+
+.btn {
+  padding: 14px 30px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-primary {
+  background: var(--gradient);
+  color: white;
+}
+
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(255, 138, 0, 0.4);
+}
+
+.btn-secondary {
+  background: var(--bg-card);
+  color: var(--text-light);
+}
+
+.btn-secondary:hover {
+  background: rgba(60, 60, 100, 0.9);
+  transform: translateY(-3px);
+}
+
+#message {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 20;
+  pointer-events: none;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+}
+
+.status-indicator {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 8px;
+  background: #777;
+}
+
+.status-active {
+  background: #4caf50;
+  box-shadow: 0 0 8px #4caf50;
+}
+
+.status-inactive {
+  background: #f44336;
+}
+
+@media (max-width: 900px) {
+  .main-content {
+    flex-direction: column;
+  }
+
+  .controls {
+    flex: 0 0 auto;
+    max-height: 400px;
+  }
+
+  .stats {
+    grid-template-columns: 1fr;
+  }
+
+  /* Stack controls on mobile */
+  .control-group {
+    grid-template-columns: 1fr;
+  }
+  
+  .control-group label {
+    white-space: normal;
+    overflow: visible;
+    min-width: auto;
+  }
+}
+
+.performance-warning {
+  background: #ff5722;
+  color: white;
+  padding: 10px;
+  border-radius: 8px;
+  text-align: center;
+  margin-top: 10px;
+  display: none;
+}
+
+.overlay-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 15px;
+  background: rgba(40, 40, 70, 0.3);
+  border-radius: 8px;
+  margin-top: 15px;
+}
+
+.overlay-preview h3 {
+  font-size: 1.1rem;
+  margin-bottom: 5px;
+  color: #ffaa33;
+}
+
+.preview-text {
+  font-size: 0.9rem;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.logo-preview {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 5px;
+}
+
+.logo-preview img {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  opacity: 0.8;
+}
+
+.device-status {
+  font-size: 0.85rem;
+  padding: 5px 10px;
+  border-radius: 4px;
+  margin-top: 5px;
+  background: rgba(255, 255, 255, 0.1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.device-connected {
+  color: #4caf50;
+}
+
+.device-disconnected {
+  color: #f44336;
+}
+
+/* Animation for overlay preview */
+@keyframes scrollPreview {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+.scrolling-preview {
+  display: inline-block;
+  white-space: nowrap;
+  animation: scrollPreview 15s linear infinite;
+}
+
+/* Background options */
+.bg-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.bg-option {
+  height: 30px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.bg-option:hover {
+  transform: scale(1.05);
+}
+
+.bg-option.selected {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 10px var(--primary-color);
+}
+
+.bg-red {
+  background: linear-gradient(to right, #cc0000, #990000);
+}
+
+.bg-blue {
+  background: linear-gradient(to right, #0066cc, #003366);
+}
+
+.bg-gold {
+  background: linear-gradient(to right, #ffcc00, #ff9900);
+}
+
+.bg-purple {
+  background: linear-gradient(to right, #6600cc, #330066);
+}
+
+.bg-green {
+  background: linear-gradient(to right, #009900, #006600);
+}
+
+.bg-black {
+  background: linear-gradient(to right, #222, #000);
+}
+
+/* Theme selector */
+.theme-selector {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  display: flex;
+  gap: 10px;
+}
+
+.theme-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid white;
+}
+
+.theme-news {
+  background: linear-gradient(135deg, var(--news-red), var(--news-blue));
+}
+
+.theme-sports {
+  background: linear-gradient(135deg, #009900, #006600);
+}
+
+.theme-tech {
+  background: linear-gradient(135deg, #0066cc, #6600cc);
+}
+
+/* Lower third */
+.lower-third {
+  position: absolute;
+  bottom: 100px;
+  left: 0;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 15px;
+  border-top: 3px solid var(--news-red);
+  z-index: 12;
+}
+
+.lower-third h3 {
+  color: white;
+  font-size: 1.5rem;
+  margin-bottom: 5px;
+}
+
+.lower-third p {
+  color: #ddd;
+  font-size: 1.1rem;
+}
+
+/* Breaking news banner */
+.breaking-news {
+  position: absolute;
+  top: 20px;
+  left: 0;
+  width: 100%;
+  background: var(--news-red);
+  padding: 10px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+  z-index: 12;
+  transform: translateY(-100px);
+  animation: slideDown 0.5s forwards;
+}
+
+@keyframes slideDown {
+  to { transform: translateY(0); }
+}
+
+.ad-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 15px;
+  background: rgba(40, 40, 70, 0.3);
+  border-radius: 8px;
+  margin-top: 15px;
+}
+
+.ad-preview-content {
+  background: rgba(0, 0, 0, 0.8);
+  border: 2px solid var(--news-gold);
+  border-radius: 8px;
+  padding: 15px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.ad-preview-content h3 {
+  color: var(--news-gold);
+  margin-bottom: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ad-preview-content p {
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Responsive text sizes */
+@media (max-width: 1200px) {
+  .header h1 {
+    font-size: 2rem;
+  }
+  
+  .control-group label {
+    font-size: 0.9rem;
+  }
+  
+  .control-group input,
+  .control-group select {
+    font-size: 0.9rem;
+    padding: 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header h1 {
+    font-size: 1.7rem;
+  }
+  
+  .header p {
+    font-size: 1rem;
+  }
+  
+  .controls-section h2 {
+    font-size: 1.2rem;
+  }
+  
+  .btn {
+    padding: 12px 20px;
+    font-size: 1rem;
+  }
+  
+  .stat-value {
+    font-size: 1.5rem;
+  }
+}
+</style>
+<script defer src="./publisher.js"></script>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1><i class="fas fa-tv"></i> Professional News TV Stream Publisher</h1>
+    <p>Create broadcast-quality news streams with overlays, animations, and advertisements</p>
+    
+    <div class="theme-selector">
+      <div class="theme-btn theme-news" title="News Theme"></div>
+      <div class="theme-btn theme-sports" title="Sports Theme"></div>
+      <div class="theme-btn theme-tech" title="Tech Theme"></div>
+    </div>
+  </div>
+  
+  <div class="main-content">
+    <div class="controls" id="controls">
+      <div class="controls-section">
+        <h2><i class="fas fa-video"></i> Video Settings</h2>
+        <div class="control-group">
+          <label for="video-device"><i class="fas fa-camera"></i> Video Source</label>
+          <select id="video-device">
+            <option value="none">None</option>
+          </select>
+        </div>
+        <div class="device-status" id="video-device-status">No device selected</div>
+        
+        <div class="control-group">
+          <label for="video-codec"><i class="fas fa-code"></i> Video Codec</label>
+          <select id="video-codec"></select>
+        </div>
+        
+        <div class="control-group">
+          <label for="video-bitrate"><i class="fas fa-tachometer-alt"></i> Bitrate (kbps)</label>
+          <input id="video-bitrate" type="text" value="10000">
+        </div>
+        
+        <div class="control-group">
+          <label for="video-framerate"><i class="fas fa-film"></i> Frame Rate</label>
+          <input id="video-framerate" type="text" value="30">
+        </div>
+        
+        <div class="control-group">
+          <label for="video-width"><i class="fas fa-arrows-alt-h"></i> Width</label>
+          <input id="video-width" type="text" value="1920">
+        </div>
+        
+        <div class="control-group">
+          <label for="video-height"><i class="fas fa-arrows-alt-v"></i> Height</label>
+          <input id="video-height" type="text" value="1080">
+        </div>
+      </div>
+      
+      <div class="controls-section">
+        <h2><i class="fas fa-microphone"></i> Audio Settings</h2>
+        <div class="control-group">
+          <label for="audio-device"><i class="fas fa-microphone-alt"></i> Audio Source</label>
+          <select id="audio-device">
+            <option value="none">None</option>
+          </select>
+        </div>
+        <div class="device-status" id="audio-device-status">No device selected</div>
+        
+        <div class="control-group">
+          <label for="audio-codec"><i class="fas fa-file-audio"></i> Audio Codec</label>
+          <select id="audio-codec"></select>
+        </div>
+        
+        <div class="control-group">
+          <label for="audio-bitrate"><i class="fas fa-tachometer-alt"></i> Bitrate (kbps)</label>
+          <input id="audio-bitrate" type="text" value="32">
+        </div>
+        
+        <div class="control-group">
+          <label for="audio-voice"><i class="fas fa-headphones"></i> Voice Optimized</label>
+          <div>
+            <input id="audio-voice" type="checkbox" checked>
+          </div>
+        </div>
+      </div>
+      
+      <div class="controls-section">
+        <h2><i class="fas fa-layer-group"></i> Overlay Settings</h2>
+        <div class="control-group">
+          <label for="scroller-text"><i class="fas fa-scroll"></i> Scrolling Text</label>
+          <input id="scroller-text" type="text" value="BREAKING: Major breakthrough in AI technology announced today!">
+        </div>
+        
+        <div class="control-group">
+          <label for="scroller-speed"><i class="fas fa-tachometer-alt"></i> Scroll Speed</label>
+          <input id="scroller-speed" type="range" min="1" max="10" value="5">
+        </div>
+        
+        <div class="control-group">
+          <label for="scroller-bg"><i class="fas fa-palette"></i> Text Background</label>
+          <select id="scroller-bg">
+            <option value="red">Red (News)</option>
+            <option value="blue">Blue (Politics)</option>
+            <option value="gold">Gold (Finance)</option>
+            <option value="purple">Purple (Entertainment)</option>
+            <option value="green">Green (Sports)</option>
+            <option value="black">Black (Default)</option>
+          </select>
+        </div>
+        
+        <div class="control-group">
+          <label for="logo-opacity"><i class="fas fa-image"></i> Logo Opacity</label>
+          <input id="logo-opacity" type="range" min="0" max="100" value="80">
+        </div>
+        
+        <div class="overlay-preview">
+          <h3><i class="fas fa-eye"></i> Preview</h3>
+          <div class="preview-text">
+            <span class="scrolling-preview" id="scroller-preview">BREAKING: Major breakthrough in AI technology announced today!</span>
+          </div>
+          <div class="logo-preview">
+            <img id="logo-preview-img" src="https://placehold.co/120x60?text=NEWS24" alt="Logo Preview">
+            <span>Opacity: <span id="opacity-preview">80%</span></span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="controls-section">
+        <h2><i class="fas fa-ad"></i> Ad Settings</h2>
+        <div class="control-group">
+          <label for="ad-text"><i class="fas fa-font"></i> Ad Text</label>
+          <input id="ad-text" type="text" value="SPONSORED BY TECH SOLUTIONS">
+        </div>
+        
+        <div class="control-group">
+          <label for="ad-position"><i class="fas fa-map-marker-alt"></i> Position</label>
+          <select id="ad-position">
+            <option value="top-right">Top Right</option>
+            <option value="bottom-right">Bottom Right</option>
+            <option value="bottom-left">Bottom Left</option>
+            <option value="center">Center</option>
+          </select>
+        </div>
+        
+        <div class="control-group">
+          <label for="ad-animation"><i class="fas fa-film"></i> Animation</label>
+          <select id="ad-animation">
+            <option value="fade">Fade In/Out</option>
+            <option value="slide">Slide In/Out</option>
+            <option value="bounce">Bounce</option>
+            <option value="none">None</option>
+          </select>
+        </div>
+        
+        <div class="control-group">
+          <label for="ad-frequency"><i class="fas fa-sync-alt"></i> Frequency (sec)</label>
+          <input id="ad-frequency" type="text" value="30">
+        </div>
+        
+        <div class="ad-preview">
+          <h3><i class="fas fa-ad"></i> Ad Preview</h3>
+          <div class="ad-preview-content">
+            <h3>SPONSORED BY</h3>
+            <p>TECH SOLUTIONS INC.</p>
+            <p>Innovating the Future</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="actions">
+        <button id="publish-button" class="btn btn-primary">
+          <span class="status-indicator status-inactive"></span>
+          <i class="fas fa-broadcast-tower"></i> Start Streaming
+        </button>
+        <button id="stop-button" class="btn btn-secondary">
+          <i class="fas fa-stop"></i> Stop
+        </button>
+      </div>
+      
+      <div class="performance-warning" id="performance-warning">
+        <i class="fas fa-exclamation-triangle"></i> High CPU usage detected. Consider reducing resolution or frame rate.
+      </div>
+    </div>
+    
+    <div class="preview-area">
+      <div class="video-container">
+        <video id="video" muted autoplay playsinline></video>
+        <canvas id="news-canvas" width="1920" height="1080"></canvas>
+        
+        <!-- Breaking news banner -->
+        <div class="breaking-news">
+          <i class="fas fa-bullhorn"></i> BREAKING NEWS: Global tech conference announces revolutionary AI advancements
+        </div>
+        
+        <!-- Lower third -->
+        <div class="lower-third">
+          <h3>LIVE FROM NEW YORK</h3>
+          <p>Technology Correspondent: Sarah Johnson</p>
+        </div>
+        
+        <div id="message"></div>
+      </div>
+      
+      <div class="stats">
+        <div class="stat-card">
+          <h3><i class="fas fa-microchip"></i> CPU Usage</h3>
+          <div class="stat-value" id="cpu-usage">0%</div>
+        </div>
+        <div class="stat-card">
+          <h3><i class="fas fa-memory"></i> Memory</h3>
+          <div class="stat-value" id="memory-usage">0 MB</div>
+        </div>
+        <div class="stat-card">
+          <h3><i class="fas fa-tachometer-alt"></i> FPS</h3>
+          <div class="stat-value" id="fps-counter">0</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Class-based Stream Publisher
+class StreamPublisher {
+  constructor() {
+    // DOM element cache
+    this.dom = {
+      video: document.getElementById('video'),
+      message: document.getElementById('message'),
+      publishButton: document.getElementById('publish-button'),
+      stopButton: document.getElementById('stop-button'),
+      canvas: document.getElementById('news-canvas'),
+      ctx: document.getElementById('news-canvas').getContext('2d'),
+      cpuUsage: document.getElementById('cpu-usage'),
+      memoryUsage: document.getElementById('memory-usage'),
+      fpsCounter: document.getElementById('fps-counter'),
+      performanceWarning: document.getElementById('performance-warning'),
+      scrollerPreview: document.getElementById('scroller-preview'),
+      opacityPreview: document.getElementById('opacity-preview'),
+      videoDeviceStatus: document.getElementById('video-device-status'),
+      audioDeviceStatus: document.getElementById('audio-device-status'),
+      logoPreviewImg: document.getElementById('logo-preview-img'),
+      videoForm: {
+        device: document.getElementById('video-device'),
+        codec: document.getElementById('video-codec'),
+        bitrate: document.getElementById('video-bitrate'),
+        framerate: document.getElementById('video-framerate'),
+        width: document.getElementById('video-width'),
+        height: document.getElementById('video-height')
+      },
+      audioForm: {
+        device: document.getElementById('audio-device'),
+        codec: document.getElementById('audio-codec'),
+        bitrate: document.getElementById('audio-bitrate'),
+        voice: document.getElementById('audio-voice'),
+      },
+      overlayForm: {
+        text: document.getElementById('scroller-text'),
+        speed: document.getElementById('scroller-speed'),
+        opacity: document.getElementById('logo-opacity'),
+        bg: document.getElementById('scroller-bg')
+      },
+      adForm: {
+        text: document.getElementById('ad-text'),
+        position: document.getElementById('ad-position'),
+        animation: document.getElementById('ad-animation'),
+        frequency: document.getElementById('ad-frequency')
+      }
+    };
+    
+    // Application state
+    this.state = {
+      publisher: null,
+      animationId: null,
+      stream: null,
+      lastFrameTime: 0,
+      frameCount: 0,
+      fps: 0,
+      isStreaming: false,
+      performanceWarningShown: false,
+      scrollX: 0,
+      lastVideoWidth: 0,
+      lastVideoHeight: 0,
+      logo: new Image(),
+      adTimer: null,
+      adVisible: true,
+      adLastChange: 0,
+      adProgress: 0
+    };
+    
+    // Initialize logo
+    this.state.logo.crossOrigin = "anonymous";
+    this.state.logo.src = 'https://placehold.co/120x60?text=NEWS24';
+    
+    // Set initial ad state
+    this.updateAdPosition();
+    
+    // Bind event handlers
+    this.initEventListeners = this.initEventListeners.bind(this);
+    this.onPublish = this.onPublish.bind(this);
+    this.stopStreaming = this.stopStreaming.bind(this);
+    this.drawOverlayFrame = this.drawOverlayFrame.bind(this);
+    this.updateOverlayPreview = this.updateOverlayPreview.bind(this);
+    this.updateAdPosition = this.updateAdPosition.bind(this);
+    this.drawAd = this.drawAd.bind(this);
+  }
+  
+  // Set message function
+  setMessage(str) {
+    this.dom.message.innerText = str;
+  }
+  
+  // Update device status
+  updateDeviceStatus() {
+    const videoDevice = this.dom.videoForm.device.value;
+    const audioDevice = this.dom.audioForm.device.value;
+    
+    this.dom.videoDeviceStatus.textContent = videoDevice === 'none' ? 
+      'No video device selected' : 
+      `Using: ${this.dom.videoForm.device.options[this.dom.videoForm.device.selectedIndex].text}`;
+    
+    this.dom.videoDeviceStatus.className = videoDevice === 'none' ? 
+      'device-status device-disconnected' : 
+      'device-status device-connected';
+    
+    this.dom.audioDeviceStatus.textContent = audioDevice === 'none' ? 
+      'No audio device selected' : 
+      `Using: ${this.dom.audioForm.device.options[this.dom.audioForm.device.selectedIndex].text}`;
+    
+    this.dom.audioDeviceStatus.className = audioDevice === 'none' ? 
+      'device-status device-disconnected' : 
+      'device-status device-connected';
+  }
+  
+  // Update overlay preview
+  updateOverlayPreview() {
+    // Update scrolling text preview
+    this.dom.scrollerPreview.textContent = this.dom.overlayForm.text.value || 'Breaking News!';
+    
+    // Update opacity preview
+    const opacityValue = this.dom.overlayForm.opacity.value;
+    this.dom.opacityPreview.textContent = `${opacityValue}%`;
+    this.dom.logoPreviewImg.style.opacity = opacityValue / 100;
+  }
+  
+  // Update ad position
+  updateAdPosition() {
+    // This is now handled in the drawAd method
+  }
+  
+  // Draw ad on canvas
+  drawAd() {
+    if (!this.state.isStreaming) return;
+    
+    const ctx = this.dom.ctx;
+    const canvas = this.dom.canvas;
+    const now = Date.now();
+    const frequency = parseInt(this.dom.adForm.frequency.value) * 1000 || 30000;
+    const visibleDuration = frequency * 0.8;
+    
+    // Calculate ad visibility
+    const cycleTime = now % frequency;
+    const isAdVisible = cycleTime < visibleDuration;
+    
+    if (!isAdVisible) return;
+    
+    // Calculate animation progress
+    this.state.adProgress = cycleTime / visibleDuration;
+    
+    // Get ad text
+    const adText = this.dom.adForm.text.value;
+    
+    // Define ad dimensions
+    const adWidth = 300;
+    const adHeight = 150;
+    
+    // Position based on setting
+    let x, y;
+    const position = this.dom.adForm.position.value;
+    switch(position) {
+      case 'top-right':
+        x = canvas.width - adWidth - 20;
+        y = 20;
+        break;
+      case 'bottom-right':
+        x = canvas.width - adWidth - 20;
+        y = canvas.height - adHeight - 20;
+        break;
+      case 'bottom-left':
+        x = 20;
+        y = canvas.height - adHeight - 20;
+        break;
+      case 'center':
+        x = (canvas.width - adWidth) / 2;
+        y = (canvas.height - adHeight) / 2;
+        break;
+    }
+    
+    // Apply animation
+    const animation = this.dom.adForm.animation.value;
+    ctx.save();
+    
+    if (animation === 'fade') {
+      ctx.globalAlpha = Math.sin(this.state.adProgress * Math.PI);
+    } else if (animation === 'slide') {
+      x = canvas.width - (1 - this.state.adProgress) * (adWidth + 40);
+    } else if (animation === 'bounce') {
+      const scale = 1 + 0.1 * Math.sin(this.state.adProgress * 4 * Math.PI);
+      ctx.translate(x + adWidth/2, y + adHeight/2);
+      ctx.scale(scale, scale);
+      ctx.translate(-(x + adWidth/2), -(y + adHeight/2));
+    }
+    
+    // Draw ad background
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+    ctx.fillRect(x, y, adWidth, adHeight);
+    
+    // Draw border
+    ctx.strokeStyle = '#ffcc00';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(x, y, adWidth, adHeight);
+    
+    // Draw text
+    ctx.fillStyle = 'white';
+    ctx.font = 'bold 20px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText(adText, x + adWidth/2, y + adHeight/2 - 15);
+    
+    ctx.font = 'bold 16px Arial';
+    ctx.fillText('SPONSORED CONTENT', x + adWidth/2, y + adHeight/2 + 15);
+    
+    // Draw company name
+    ctx.font = 'italic 18px Arial';
+    ctx.fillText('TECH SOLUTIONS INC.', x + adWidth/2, y + adHeight/2 + 40);
+    
+    ctx.restore();
+  }
+  
+  // Performance monitoring
+  monitorPerformance() {
+    if (!this.state.isStreaming) return;
+    
+    // Simulate performance metrics
+    const cpu = Math.min(100, Math.floor(Math.random() * 30) + 5);
+    const memory = Math.floor(Math.random() * 30) + 20;
+    
+    this.dom.cpuUsage.textContent = `${cpu}%`;
+    this.dom.memoryUsage.textContent = `${memory} MB`;
+    this.dom.fpsCounter.textContent = this.state.fps;
+    
+    // Show warning if CPU is high
+    if (cpu > 70 && !this.state.performanceWarningShown) {
+      this.dom.performanceWarning.style.display = 'block';
+      this.state.performanceWarningShown = true;
+    } else if (cpu <= 70 && this.state.performanceWarningShown) {
+      this.dom.performanceWarning.style.display = 'none';
+      this.state.performanceWarningShown = false;
+    }
+    
+    setTimeout(() => this.monitorPerformance(), 1000);
+  }
+  
+  // Optimized overlay rendering
+  drawOverlayFrame() {
+    if (!this.state.isStreaming) return;
+    
+    const now = performance.now();
+    const elapsed = now - this.state.lastFrameTime;
+    
+    // Update FPS counter
+    this.state.frameCount++;
+    if (elapsed >= 1000) {
+      this.state.fps = Math.round((this.state.frameCount * 1000) / elapsed);
+      this.state.frameCount = 0;
+      this.state.lastFrameTime = now;
+    }
+    
+    // Only resize canvas if video dimensions changed
+    if (this.dom.video.videoWidth !== this.state.lastVideoWidth || 
+        this.dom.video.videoHeight !== this.state.lastVideoHeight) {
+      this.dom.canvas.width = this.dom.video.videoWidth;
+      this.dom.canvas.height = this.dom.video.videoHeight;
+      this.state.lastVideoWidth = this.dom.video.videoWidth;
+      this.state.lastVideoHeight = this.dom.video.videoHeight;
+    }
+    
+    // Draw video frame to canvas
+    this.dom.ctx.drawImage(this.dom.video, 0, 0, this.dom.canvas.width, this.dom.canvas.height);
+    
+    // Get current overlay settings
+    const scrollerText = this.dom.overlayForm.text.value || 'Breaking News!';
+    const scrollSpeed = parseInt(this.dom.overlayForm.speed.value) || 5;
+    const logoOpacity = parseInt(this.dom.overlayForm.opacity.value) || 80;
+    
+    // Draw logo with opacity
+    const logoSize = Math.min(120, this.dom.canvas.width / 8);
+    if (this.state.logo.complete) {
+      this.dom.ctx.globalAlpha = logoOpacity / 100;
+      this.dom.ctx.drawImage(
+        this.state.logo, 
+        this.dom.canvas.width - logoSize - 20, 
+        20, 
+        logoSize, 
+        logoSize
+      );
+      this.dom.ctx.globalAlpha = 1.0;
+    }
+    
+    // Draw scrolling text with selected background
+    const bgColor = this.dom.overlayForm.bg.value;
+    let bgGradient;
+    
+    switch(bgColor) {
+      case 'red':
+        bgGradient = this.dom.ctx.createLinearGradient(0, 0, this.dom.canvas.width, 0);
+        bgGradient.addColorStop(0, '#cc0000');
+        bgGradient.addColorStop(1, '#990000');
+        break;
+      case 'blue':
+        bgGradient = this.dom.ctx.createLinearGradient(0, 0, this.dom.canvas.width, 0);
+        bgGradient.addColorStop(0, '#0066cc');
+        bgGradient.addColorStop(1, '#003366');
+        break;
+      case 'gold':
+        bgGradient = this.dom.ctx.createLinearGradient(0, 0, this.dom.canvas.width, 0);
+        bgGradient.addColorStop(0, '#ffcc00');
+        bgGradient.addColorStop(1, '#ff9900');
+        break;
+      case 'purple':
+        bgGradient = this.dom.ctx.createLinearGradient(0, 0, this.dom.canvas.width, 0);
+        bgGradient.addColorStop(0, '#6600cc');
+        bgGradient.addColorStop(1, '#330066');
+        break;
+      case 'green':
+        bgGradient = this.dom.ctx.createLinearGradient(0, 0, this.dom.canvas.width, 0);
+        bgGradient.addColorStop(0, '#009900');
+        bgGradient.addColorStop(1, '#006600');
+        break;
+      default: // black
+        bgGradient = this.dom.ctx.createLinearGradient(0, 0, this.dom.canvas.width, 0);
+        bgGradient.addColorStop(0, '#222');
+        bgGradient.addColorStop(1, '#000');
+    }
+    
+    this.dom.ctx.fillStyle = bgGradient;
+    this.dom.ctx.fillRect(0, this.dom.canvas.height - 60, this.dom.canvas.width, 60);
+    this.dom.ctx.font = 'bold 30px Arial';
+    this.dom.ctx.fillStyle = 'white';
+    
+    // Update scrolling position
+    this.state.scrollX -= scrollSpeed;
+    const textWidth = this.dom.ctx.measureText(scrollerText).width;
+    
+    if (this.state.scrollX + textWidth < 0) {
+      this.state.scrollX = this.dom.canvas.width;
+    }
+    
+    this.dom.ctx.fillText(scrollerText, this.state.scrollX, this.dom.canvas.height - 20);
+    
+    // Draw ad on canvas
+    this.drawAd();
+    
+    // Request next frame
+    this.state.animationId = requestAnimationFrame(this.drawOverlayFrame);
+  }
+  
+  // Start overlay streaming
+  startOverlayStreaming(stream) {
+    this.state.stream = stream;
+    this.dom.video.srcObject = stream;
+    
+    this.dom.video.onloadedmetadata = () => {
+      this.dom.video.play().then(() => {
+        // Set initial canvas dimensions
+        this.dom.canvas.width = this.dom.video.videoWidth;
+        this.dom.canvas.height = this.dom.video.videoHeight;
+        this.state.lastVideoWidth = this.dom.video.videoWidth;
+        this.state.lastVideoHeight = this.dom.video.videoHeight;
+        
+        // Start overlay rendering
+        this.state.lastFrameTime = performance.now();
+        this.state.frameCount = 0;
+        this.state.isStreaming = true;
+        this.state.scrollX = this.dom.canvas.width;
+        this.state.adLastChange = Date.now();
+        this.drawOverlayFrame();
+        
+        // Capture canvas stream
+        const canvasStream = this.dom.canvas.captureStream(
+          parseInt(this.dom.videoForm.framerate.value) || 30
+        );
+        
+        const finalStream = new MediaStream();
+        canvasStream.getVideoTracks().forEach(track => finalStream.addTrack(track));
+        stream.getAudioTracks().forEach(track => finalStream.addTrack(track));
+        
+        // Start publisher
+        this.state.publisher = new MediaMTXWebRTCPublisher({
+          url: new URL('whip', window.location.href) + window.location.search,
+          stream: finalStream,
+          videoCodec: this.dom.videoForm.codec.value,
+          videoBitrate: parseInt(this.dom.videoForm.bitrate.value) || 10000,
+          audioCodec: this.dom.audioForm.codec.value,
+          audioBitrate: parseInt(this.dom.audioForm.bitrate.value) || 32,
+          audioVoice: this.dom.audioForm.voice.checked,
+          onError: (err) => {
+            this.setMessage(err);
+            this.stopStreaming();
+          },
+          onConnected: () => {
+            this.setMessage('');
+            this.dom.publishButton.innerHTML = '<span class="status-indicator status-active"></span> <i class="fas fa-broadcast-tower"></i> Streaming';
+            this.dom.publishButton.classList.add('btn-primary-active');
+            this.monitorPerformance();
+          }
+        });
+      }).catch(err => {
+        this.setMessage(`Error playing video: ${err.message}`);
+        this.stopStreaming();
+      });
+    };
+  }
+  
+  // Handle publish button click
+  onPublish() {
+    if (this.state.isStreaming) return;
+    
+    const videoId = this.dom.videoForm.device.value;
+    const audioId = this.dom.audioForm.device.value;
+    
+    if (videoId === 'none' && audioId === 'none') {
+      this.setMessage('Please select at least one video or audio source');
+      return;
+    }
+    
+    this.setMessage('Connecting...');
+    
+    let videoOpts = false;
+    if (videoId !== 'none' && videoId !== 'screen') {
+      videoOpts = {
+        deviceId: videoId,
+        width: { ideal: parseInt(this.dom.videoForm.width.value) || 1920 },
+        height: { ideal: parseInt(this.dom.videoForm.height.value) || 1080 },
+        frameRate: { ideal: parseInt(this.dom.videoForm.framerate.value) || 30 }
+      };
+    }
+    
+    let audioOpts = false;
+    if (audioId !== 'none') {
+      audioOpts = {
+        deviceId: audioId,
+        autoGainControl: false,
+        echoCancellation: false,
+        noiseSuppression: false
+      };
+      
+      if (this.dom.audioForm.voice.checked) {
+        audioOpts.autoGainControl = true;
+        audioOpts.echoCancellation = true;
+        audioOpts.noiseSuppression = true;
+      }
+    }
+    
+    const mediaPromise = (videoId === 'screen') ? 
+      navigator.mediaDevices.getDisplayMedia({
+        video: {
+          width: { ideal: parseInt(this.dom.videoForm.width.value) || 1920 },
+          height: { ideal: parseInt(this.dom.videoForm.height.value) || 1080 },
+          frameRate: { ideal: parseInt(this.dom.videoForm.framerate.value) || 30 },
+          cursor: 'always'
+        },
+        audio: audioOpts || true
+      }) :
+      navigator.mediaDevices.getUserMedia({
+        video: videoOpts,
+        audio: audioOpts
+      });
+    
+    mediaPromise
+      .then(stream => this.startOverlayStreaming(stream))
+      .catch(err => {
+        this.setMessage(`Error: ${err.name} - ${err.message}`);
+        console.error('Media Error:', err);
+      });
+  }
+  
+  // Stop streaming function
+  stopStreaming() {
+    if (this.state.animationId) {
+      cancelAnimationFrame(this.state.animationId);
+      this.state.animationId = null;
+    }
+    
+    if (this.state.publisher) {
+      this.state.publisher.close();
+      this.state.publisher = null;
+    }
+    
+    if (this.state.stream) {
+      this.state.stream.getTracks().forEach(track => track.stop());
+      this.state.stream = null;
+    }
+    
+    if (this.state.adTimer) {
+      clearInterval(this.state.adTimer);
+      this.state.adTimer = null;
+    }
+    
+    this.state.isStreaming = false;
+    this.dom.publishButton.innerHTML = '<span class="status-indicator status-inactive"></span> <i class="fas fa-broadcast-tower"></i> Start Streaming';
+    this.dom.publishButton.classList.remove('btn-primary-active');
+    this.setMessage('');
+    
+    // Clear canvas
+    this.dom.ctx.clearRect(0, 0, this.dom.canvas.width, this.dom.canvas.height);
+    
+    // Reset performance warning
+    this.dom.performanceWarning.style.display = 'none';
+    this.state.performanceWarningShown = false;
+  }
+  
+  // Device and codec population
+  populateDevices() {
+    return navigator.mediaDevices.enumerateDevices()
+      .then(devices => {
+        // Clear existing options except "None"
+        while (this.dom.videoForm.device.children.length > 1) {
+          this.dom.videoForm.device.removeChild(this.dom.videoForm.device.lastChild);
+        }
+        
+        while (this.dom.audioForm.device.children.length > 1) {
+          this.dom.audioForm.device.removeChild(this.dom.audioForm.device.lastChild);
+        }
+        
+        devices.forEach(device => {
+          if (device.kind === 'videoinput') {
+            const opt = document.createElement('option');
+            opt.value = device.deviceId;
+            opt.text = device.label || `Video Device ${this.dom.videoForm.device.children.length}`;
+            this.dom.videoForm.device.appendChild(opt);
+          } else if (device.kind === 'audioinput') {
+            const opt = document.createElement('option');
+            opt.value = device.deviceId;
+            opt.text = device.label || `Audio Device ${this.dom.audioForm.device.children.length}`;
+            this.dom.audioForm.device.appendChild(opt);
+          }
+        });
+        
+        if (navigator.mediaDevices.getDisplayMedia !== undefined) {
+          const opt = document.createElement('option');
+          opt.value = 'screen';
+          opt.text = 'Screen Capture';
+          this.dom.videoForm.device.appendChild(opt);
+        }
+        
+        // Set default devices
+        if (this.dom.videoForm.device.children.length > 1) {
+          this.dom.videoForm.device.value = this.dom.videoForm.device.children[1].value;
+        }
+        
+        if (this.dom.audioForm.device.children.length > 1) {
+          this.dom.audioForm.device.value = this.dom.audioForm.device.children[1].value;
+        }
+        
+        this.updateDeviceStatus();
+      });
+  }
+  
+  populateCodecs() {
+    const tempPC = new RTCPeerConnection({});
+    tempPC.addTransceiver('video', { direction: 'sendonly' });
+    tempPC.addTransceiver('audio', { direction: 'sendonly' });
+    
+    return tempPC.createOffer()
+      .then(desc => {
+        const sdp = desc.sdp.toLowerCase();
+        
+        // Clear existing options
+        this.dom.videoForm.codec.innerHTML = '';
+        this.dom.audioForm.codec.innerHTML = '';
+        
+        const videoCodecs = [
+          { name: 'AV1', value: 'av1/90000' },
+          { name: 'VP9', value: 'vp9/90000' },
+          { name: 'VP8', value: 'vp8/90000' },
+          { name: 'H.264', value: 'h264/90000' }
+        ];
+        
+        const audioCodecs = [
+          { name: 'Opus', value: 'opus/48000' },
+          { name: 'G722', value: 'g722/8000' },
+          { name: 'PCMU', value: 'pcmu/8000' },
+          { name: 'PCMA', value: 'pcma/8000' }
+        ];
+        
+        // Add supported video codecs
+        videoCodecs.forEach(codec => {
+          if (sdp.includes(codec.value)) {
+            const opt = document.createElement('option');
+            opt.value = codec.value;
+            opt.text = codec.name;
+            this.dom.videoForm.codec.appendChild(opt);
+          }
+        });
+        
+        // Add supported audio codecs
+        audioCodecs.forEach(codec => {
+          if (sdp.includes(codec.value)) {
+            const opt = document.createElement('option');
+            opt.value = codec.value;
+            opt.text = codec.name;
+            this.dom.audioForm.codec.appendChild(opt);
+          }
+        });
+        
+        // Set defaults
+        if (this.dom.videoForm.codec.children.length > 0) {
+          this.dom.videoForm.codec.value = this.dom.videoForm.codec.children[0].value;
+        }
+        
+        if (this.dom.audioForm.codec.children.length > 0) {
+          this.dom.audioForm.codec.value = this.dom.audioForm.codec.children[0].value;
+        }
+        
+        tempPC.close();
+      });
+  }
+  
+  // Load settings from URL query parameters
+  loadValuesFromQuery() {
+    const params = new URLSearchParams(window.location.search);
+    
+    const setValue = (element, value) => {
+      if (!element || !value) return;
+      
+      if (element instanceof HTMLInputElement && element.type === 'text') {
+        element.value = value;
+      } else if (element instanceof HTMLInputElement && element.type === 'checkbox') {
+        element.checked = value === 'true';
+      } else if (element instanceof HTMLSelectElement) {
+        element.value = value;
+      }
+    };
+    
+    // Set video form values
+    setValue(this.dom.videoForm.device, params.get('video-device'));
+    setValue(this.dom.videoForm.codec, params.get('video-codec'));
+    setValue(this.dom.videoForm.bitrate, params.get('video-bitrate'));
+    setValue(this.dom.videoForm.framerate, params.get('video-framerate'));
+    setValue(this.dom.videoForm.width, params.get('video-width'));
+    setValue(this.dom.videoForm.height, params.get('video-height'));
+    
+    // Set audio form values
+    setValue(this.dom.audioForm.device, params.get('audio-device'));
+    setValue(this.dom.audioForm.codec, params.get('audio-codec'));
+    setValue(this.dom.audioForm.bitrate, params.get('audio-bitrate'));
+    setValue(this.dom.audioForm.voice, params.get('audio-voice'));
+    
+    // Set overlay values
+    setValue(this.dom.overlayForm.text, params.get('scroller-text'));
+    setValue(this.dom.overlayForm.bg, params.get('scroller-bg'));
+    
+    // Set ad values
+    setValue(this.dom.adForm.text, params.get('ad-text'));
+    setValue(this.dom.adForm.position, params.get('ad-position'));
+    setValue(this.dom.adForm.animation, params.get('ad-animation'));
+    
+    // Update device status
+    this.updateDeviceStatus();
+    this.updateOverlayPreview();
+  }
+  
+  // Initialize event listeners
+  initEventListeners() {
+    this.dom.publishButton.addEventListener('click', this.onPublish);
+    this.dom.stopButton.addEventListener('click', this.stopStreaming);
+    
+    // Add input listeners for URL persistence
+    const inputs = [
+      ...Object.values(this.dom.videoForm), 
+      ...Object.values(this.dom.audioForm),
+      this.dom.overlayForm.text,
+      this.dom.overlayForm.speed,
+      this.dom.overlayForm.opacity,
+      this.dom.overlayForm.bg,
+      this.dom.adForm.text,
+      this.dom.adForm.position,
+      this.dom.adForm.animation,
+      this.dom.adForm.frequency
+    ];
+    
+    inputs.forEach(input => {
+      input.addEventListener('input', () => {
+        const url = new URL(window.location);
+        
+        if (input instanceof HTMLInputElement && input.type === 'text') {
+          url.searchParams.set(input.id, input.value);
+        } else if (input instanceof HTMLInputElement && input.type === 'checkbox') {
+          url.searchParams.set(input.id, input.checked);
+        } else if (input instanceof HTMLSelectElement) {
+          url.searchParams.set(input.id, input.value);
+        } else if (input instanceof HTMLInputElement && input.type === 'range') {
+          url.searchParams.set(input.id, input.value);
+        }
+        
+        window.history.replaceState(null, null, url);
+        
+        // Update previews
+        this.updateDeviceStatus();
+        this.updateOverlayPreview();
+      });
+    });
+    
+    // Theme selector listeners
+    document.querySelector('.theme-news').addEventListener('click', () => {
+      document.documentElement.style.setProperty('--primary-color', '#cc0000');
+      document.documentElement.style.setProperty('--secondary-color', '#0066cc');
+    });
+    
+    document.querySelector('.theme-sports').addEventListener('click', () => {
+      document.documentElement.style.setProperty('--primary-color', '#009900');
+      document.documentElement.style.setProperty('--secondary-color', '#006600');
+    });
+    
+    document.querySelector('.theme-tech').addEventListener('click', () => {
+      document.documentElement.style.setProperty('--primary-color', '#0066cc');
+      document.documentElement.style.setProperty('--secondary-color', '#6600cc');
+    });
+    
+    // Initial preview updates
+    this.updateDeviceStatus();
+    this.updateOverlayPreview();
+  }
+  
+  // Initialize the application
+  init() {
+    if (!navigator.mediaDevices) {
+      this.setMessage(`WebRTC not supported in this browser. Make sure you're using HTTPS.`);
+      return;
+    }
+    
+    // Set up event listeners
+    this.initEventListeners();
+    
+    // Populate devices and codecs
+    this.setMessage('Loading devices...');
+    
+    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+      .then(tempStream => {
+        return Promise.all([this.populateDevices(), this.populateCodecs()])
+          .then(() => {
+            // Free the temporary stream
+            tempStream.getTracks().forEach(track => track.stop());
+            
+            // Load settings from URL
+            this.loadValuesFromQuery();
+            
+            this.setMessage('');
+          })
+          .catch(err => {
+            this.setMessage(`Error: ${err.message}`);
+            console.error('Initialization error:', err);
+          });
+      })
+      .catch(err => {
+        this.setMessage(`Camera/mic access required: ${err.message}`);
+        console.error('Media access error:', err);
+        
+        // Try without temp stream
+        Promise.all([this.populateDevices(), this.populateCodecs()])
+          .then(() => {
+            this.loadValuesFromQuery();
+            this.setMessage('Camera/mic access not granted. You can still stream screen.');
+          })
+          .catch(e => {
+            this.setMessage(`Error: ${e.message}`);
+          });
+      });
+  }
+}
+
+// Initialize when DOM is ready
+window.addEventListener('DOMContentLoaded', () => {
+  const streamPublisher = new StreamPublisher();
+  streamPublisher.init();
+});
+</script>
+</body>
+</html>
