@@ -562,41 +562,6 @@ html, body {
   to { transform: translateY(0); }
 }
 
-.ad-preview {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 15px;
-  background: rgba(40, 40, 70, 0.3);
-  border-radius: 8px;
-  margin-top: 15px;
-}
-
-.ad-preview-content {
-  background: rgba(0, 0, 0, 0.8);
-  border: 2px solid var(--news-gold);
-  border-radius: 8px;
-  padding: 15px;
-  text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-}
-
-.ad-preview-content h3 {
-  color: var(--news-gold);
-  margin-bottom: 10px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.ad-preview-content p {
-  font-size: 0.9rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 /* Responsive text sizes */
 @media (max-width: 1200px) {
   .header h1 {
@@ -643,7 +608,7 @@ html, body {
 <div class="container">
   <div class="header">
     <h1><i class="fas fa-tv"></i> Professional News TV Stream Publisher</h1>
-    <p>Create broadcast-quality news streams with overlays, animations, and advertisements</p>
+    <p>Create broadcast-quality news streams with overlays and animations</p>
     
     <div class="theme-selector">
       <div class="theme-btn theme-news" title="News Theme"></div>
@@ -759,48 +724,6 @@ html, body {
         </div>
       </div>
       
-      <div class="controls-section">
-        <h2><i class="fas fa-ad"></i> Ad Settings</h2>
-        <div class="control-group">
-          <label for="ad-text"><i class="fas fa-font"></i> Ad Text</label>
-          <input id="ad-text" type="text" value="SPONSORED BY TECH SOLUTIONS">
-        </div>
-        
-        <div class="control-group">
-          <label for="ad-position"><i class="fas fa-map-marker-alt"></i> Position</label>
-          <select id="ad-position">
-            <option value="top-right">Top Right</option>
-            <option value="bottom-right">Bottom Right</option>
-            <option value="bottom-left">Bottom Left</option>
-            <option value="center">Center</option>
-          </select>
-        </div>
-        
-        <div class="control-group">
-          <label for="ad-animation"><i class="fas fa-film"></i> Animation</label>
-          <select id="ad-animation">
-            <option value="fade">Fade In/Out</option>
-            <option value="slide">Slide In/Out</option>
-            <option value="bounce">Bounce</option>
-            <option value="none">None</option>
-          </select>
-        </div>
-        
-        <div class="control-group">
-          <label for="ad-frequency"><i class="fas fa-sync-alt"></i> Frequency (sec)</label>
-          <input id="ad-frequency" type="text" value="30">
-        </div>
-        
-        <div class="ad-preview">
-          <h3><i class="fas fa-ad"></i> Ad Preview</h3>
-          <div class="ad-preview-content">
-            <h3>SPONSORED BY</h3>
-            <p>TECH SOLUTIONS INC.</p>
-            <p>Innovating the Future</p>
-          </div>
-        </div>
-      </div>
-      
       <div class="actions">
         <button id="publish-button" class="btn btn-primary">
           <span class="status-indicator status-inactive"></span>
@@ -819,19 +742,7 @@ html, body {
     <div class="preview-area">
       <div class="video-container">
         <video id="video" muted autoplay playsinline></video>
-        <canvas id="news-canvas" width="1920" height="1080"></canvas>
-        
-        <!-- Breaking news banner -->
-        <div class="breaking-news">
-          <i class="fas fa-bullhorn"></i> BREAKING NEWS: Global tech conference announces revolutionary AI advancements
-        </div>
-        
-        <!-- Lower third -->
-        <div class="lower-third">
-          <h3>LIVE FROM NEW YORK</h3>
-          <p>Technology Correspondent: Sarah Johnson</p>
-        </div>
-        
+        <canvas id="news-canvas" width="1920" height="1080"></canvas>  
         <div id="message"></div>
       </div>
       
@@ -893,12 +804,6 @@ class StreamPublisher {
         speed: document.getElementById('scroller-speed'),
         opacity: document.getElementById('logo-opacity'),
         bg: document.getElementById('scroller-bg')
-      },
-      adForm: {
-        text: document.getElementById('ad-text'),
-        position: document.getElementById('ad-position'),
-        animation: document.getElementById('ad-animation'),
-        frequency: document.getElementById('ad-frequency')
       }
     };
     
@@ -915,19 +820,12 @@ class StreamPublisher {
       scrollX: 0,
       lastVideoWidth: 0,
       lastVideoHeight: 0,
-      logo: new Image(),
-      adTimer: null,
-      adVisible: true,
-      adLastChange: 0,
-      adProgress: 0
+      logo: new Image()
     };
     
     // Initialize logo
     this.state.logo.crossOrigin = "anonymous";
     this.state.logo.src = 'https://placehold.co/120x60?text=NEWS24';
-    
-    // Set initial ad state
-    this.updateAdPosition();
     
     // Bind event handlers
     this.initEventListeners = this.initEventListeners.bind(this);
@@ -935,8 +833,6 @@ class StreamPublisher {
     this.stopStreaming = this.stopStreaming.bind(this);
     this.drawOverlayFrame = this.drawOverlayFrame.bind(this);
     this.updateOverlayPreview = this.updateOverlayPreview.bind(this);
-    this.updateAdPosition = this.updateAdPosition.bind(this);
-    this.drawAd = this.drawAd.bind(this);
   }
   
   // Set message function
@@ -975,99 +871,6 @@ class StreamPublisher {
     const opacityValue = this.dom.overlayForm.opacity.value;
     this.dom.opacityPreview.textContent = `${opacityValue}%`;
     this.dom.logoPreviewImg.style.opacity = opacityValue / 100;
-  }
-  
-  // Update ad position
-  updateAdPosition() {
-    // This is now handled in the drawAd method
-  }
-  
-  // Draw ad on canvas
-  drawAd() {
-    if (!this.state.isStreaming) return;
-    
-    const ctx = this.dom.ctx;
-    const canvas = this.dom.canvas;
-    const now = Date.now();
-    const frequency = parseInt(this.dom.adForm.frequency.value) * 1000 || 30000;
-    const visibleDuration = frequency * 0.8;
-    
-    // Calculate ad visibility
-    const cycleTime = now % frequency;
-    const isAdVisible = cycleTime < visibleDuration;
-    
-    if (!isAdVisible) return;
-    
-    // Calculate animation progress
-    this.state.adProgress = cycleTime / visibleDuration;
-    
-    // Get ad text
-    const adText = this.dom.adForm.text.value;
-    
-    // Define ad dimensions
-    const adWidth = 300;
-    const adHeight = 150;
-    
-    // Position based on setting
-    let x, y;
-    const position = this.dom.adForm.position.value;
-    switch(position) {
-      case 'top-right':
-        x = canvas.width - adWidth - 20;
-        y = 20;
-        break;
-      case 'bottom-right':
-        x = canvas.width - adWidth - 20;
-        y = canvas.height - adHeight - 20;
-        break;
-      case 'bottom-left':
-        x = 20;
-        y = canvas.height - adHeight - 20;
-        break;
-      case 'center':
-        x = (canvas.width - adWidth) / 2;
-        y = (canvas.height - adHeight) / 2;
-        break;
-    }
-    
-    // Apply animation
-    const animation = this.dom.adForm.animation.value;
-    ctx.save();
-    
-    if (animation === 'fade') {
-      ctx.globalAlpha = Math.sin(this.state.adProgress * Math.PI);
-    } else if (animation === 'slide') {
-      x = canvas.width - (1 - this.state.adProgress) * (adWidth + 40);
-    } else if (animation === 'bounce') {
-      const scale = 1 + 0.1 * Math.sin(this.state.adProgress * 4 * Math.PI);
-      ctx.translate(x + adWidth/2, y + adHeight/2);
-      ctx.scale(scale, scale);
-      ctx.translate(-(x + adWidth/2), -(y + adHeight/2));
-    }
-    
-    // Draw ad background
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
-    ctx.fillRect(x, y, adWidth, adHeight);
-    
-    // Draw border
-    ctx.strokeStyle = '#ffcc00';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(x, y, adWidth, adHeight);
-    
-    // Draw text
-    ctx.fillStyle = 'white';
-    ctx.font = 'bold 20px Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText(adText, x + adWidth/2, y + adHeight/2 - 15);
-    
-    ctx.font = 'bold 16px Arial';
-    ctx.fillText('SPONSORED CONTENT', x + adWidth/2, y + adHeight/2 + 15);
-    
-    // Draw company name
-    ctx.font = 'italic 18px Arial';
-    ctx.fillText('TECH SOLUTIONS INC.', x + adWidth/2, y + adHeight/2 + 40);
-    
-    ctx.restore();
   }
   
   // Performance monitoring
@@ -1191,9 +994,6 @@ class StreamPublisher {
     
     this.dom.ctx.fillText(scrollerText, this.state.scrollX, this.dom.canvas.height - 20);
     
-    // Draw ad on canvas
-    this.drawAd();
-    
     // Request next frame
     this.state.animationId = requestAnimationFrame(this.drawOverlayFrame);
   }
@@ -1216,7 +1016,6 @@ class StreamPublisher {
         this.state.frameCount = 0;
         this.state.isStreaming = true;
         this.state.scrollX = this.dom.canvas.width;
-        this.state.adLastChange = Date.now();
         this.drawOverlayFrame();
         
         // Capture canvas stream
@@ -1333,11 +1132,6 @@ class StreamPublisher {
     if (this.state.stream) {
       this.state.stream.getTracks().forEach(track => track.stop());
       this.state.stream = null;
-    }
-    
-    if (this.state.adTimer) {
-      clearInterval(this.state.adTimer);
-      this.state.adTimer = null;
     }
     
     this.state.isStreaming = false;
@@ -1494,11 +1288,6 @@ class StreamPublisher {
     setValue(this.dom.overlayForm.text, params.get('scroller-text'));
     setValue(this.dom.overlayForm.bg, params.get('scroller-bg'));
     
-    // Set ad values
-    setValue(this.dom.adForm.text, params.get('ad-text'));
-    setValue(this.dom.adForm.position, params.get('ad-position'));
-    setValue(this.dom.adForm.animation, params.get('ad-animation'));
-    
     // Update device status
     this.updateDeviceStatus();
     this.updateOverlayPreview();
@@ -1516,11 +1305,7 @@ class StreamPublisher {
       this.dom.overlayForm.text,
       this.dom.overlayForm.speed,
       this.dom.overlayForm.opacity,
-      this.dom.overlayForm.bg,
-      this.dom.adForm.text,
-      this.dom.adForm.position,
-      this.dom.adForm.animation,
-      this.dom.adForm.frequency
+      this.dom.overlayForm.bg
     ];
     
     inputs.forEach(input => {
